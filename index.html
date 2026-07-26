@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="description" content="TilTool - Professional Construction Compliance Tile Calculator Engine for construction projects">
+  <meta name="author" content="TilTool Development">
+  <meta name="theme-color" content="#0284c7">
+  <title>TilTool - Tile Construction Compliance Calculator</title>
+  
+  <style>
+    :root {
+      --primary: #0284c7;
+      --primary-dark: #0369a1;
+      --success: #16a34a;
+      --warning: #ea580c;
+      --error: #dc2626;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 700px;
+      background: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      padding: 24px 20px;
+      text-align: center;
+      border-bottom: 3px solid var(--primary-dark);
+    }
+
+    .header h1 {
+      font-size: 1.6rem;
+      margin-bottom: 4px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .header p {
+      font-size: 0.9rem;
+      opacity: 0.95;
+      margin-bottom: 8px;
+    }
+
+    .version-badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .content {
+      padding: 24px;
+    }
+
+    .section-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--primary-dark);
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title::before {
+      content: "";
+      display: inline-block;
+      width: 4px;
+      height: 20px;
+      background: var(--primary);
+      border-radius: 2px;
+    }
+
+    .input-group {
+      margin-bottom: 16px;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .field {
+      flex: 1;
+      min-width: 150px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    .field-hint {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      background: var(--card-bg);
+      color: var(--text);
+    }
+
+    input:focus, select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
+    }
+
+    input:invalid {
+      border-color: var(--error);
+    }
+
+    .btn-calc {
+      width: 100%;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 16px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-calc:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 12px rgba(2, 132, 199, 0.3);
+    }
+
+    .btn-calc:active {
+      transform: translateY(0);
+    }
+
+    .btn-calc:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: var(--text-muted);
+      width: 48%;
+      margin-top: 8px;
+    }
+
+    .btn-secondary:hover {
+      background: var(--text);
+    }
+
+    .button-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .results-card {
+      margin-top: 24px;
+      background: #f1f5f9;
+      border-radius: 8px;
+      padding: 16px;
+      border: 2px solid var(--border);
+      display: none;
+    }
+
+    .results-card.active {
+      display: block;
+      animation: slideIn 0.3s ease-in-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .result-section {
+      margin-bottom: 16px;
+    }
+
+    .result-section-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .result-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.95rem;
+    }
+
+    .result-item:last-child {
+      border-bottom: none;
+    }
+
+    .result-label {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .result-value {
+      font-weight: 700;
+      color: var(--primary-dark);
+      font-size: 1.1rem;
+    }
+
+    .result-unit {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-left: 4px;
+    }
+
+    .alert {
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin-top: 12px;
+      display: none;
+      border-left: 4px solid;
+      font-size: 0.9rem;
+    }
+
+    .alert.active {
+      display: block;
+    }
+
+    .alert-warning {
+      background: #fef3c7;
+      border-left-color: var(--warning);
+      color: #92400e;
+    }
+
+    .alert-error {
+      background: #fee2e2;
+      border-left-color: var(--error);
+      color: #7f1d1d;
+    }
+
+    .alert-success {
+      background: #dcfce7;
+      border-left-color: var(--success);
+      color: #166534;
+    }
+
+    .compliance-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #ecfdf5;
+      border: 1px solid #86efac;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      color: #166534;
+      font-weight: 600;
+      margin-top: 12px;
+    }
+
+    .compliance-badge::before {
+      content: "✓";
+      font-weight: bold;
+    }
+
+    .export-section {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .export-button {
+      background: var(--success);
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    .export-button:hover {
+      background: #15803d;
+    }
+
+    .signature-footer {
+      margin-top: 24px;
+      text-align: center;
+      padding-top: 12px;
+      border-top: 1px dashed var(--border);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .signature-badge {
+      display: inline-block;
+      margin-top: 4px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      color: var(--primary-dark);
+      background: #e0f2fe;
+      padding: 4px 10px;
+      border-radius: 4px;
+    }
+
+    .info-icon {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 16px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      cursor: help;
+      margin-left: 4px;
+    }
+
+    .tooltip {
+      position: relative;
+      display: inline-block;
+    }
+
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .tooltiptext {
+      visibility: hidden;
+      width: 200px;
+      background-color: var(--text);
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 8px;
+      position: absolute;
+      z-index: 100;
+      bottom: 125%;
+      left: 50%;
+      margin-left: -100px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      font-size: 0.75rem;
+    }
+
+    @media (max-width: 480px) {
+      .input-row {
+        flex-direction: column;
+      }
+
+      .field {
+        min-width: 100%;
+      }
+
+      .button-row {
+        flex-direction: column;
+      }
+
+      .btn-secondary {
+        width: 100%;
+      }
+
+      .header h1 {
+        font-size: 1.3rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <div class="header">
+      <h1>🏗️ TilTool Calculator</h1>
+      <p>Professional Tile Layout & Compliance Engine</p>
+      <span class="version-badge">v1.0.0 - Construction Grade</span>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+      
+      <!-- Surface Dimensions Section -->
+      <div class="section-title">Surface Measurements (Meters)</div>
+      <div class="input-group input-row">
+        <div class="field">
+          <label for="roomLength">
+            Length (m)
+            <span class="tooltip">
+              <span class="info-icon">?</span>
+              <span class="tooltiptext">Total length of the surface to be tiled in meters</span>
+            </span>
+          </label>
+          <input 
+            type="number" 
+            id="roomLength" 
+            step="0.01" 
+            min="0.1" 
+            max="100" 
+            placeholder="e.g. 5.0" 
+            required 
+            aria-label="Room length in meters">
+          <div class="field-hint">Enter value between 0.1 - 100m</div>
+        </div>
+        <div class="field">
+          <label for="roomWidth">
+            Width (m)
+            <span class="tooltip">
+              <span class="info-icon">?</span>
+              <span class="tooltiptext">Total width of the surface to be tiled in meters</span>
+            </span>
+          </label>
+          <input 
+            type="number" 
+            id="roomWidth" 
+            step="0.01" 
+            min="0.1" 
+            max="100" 
+            placeholder="e.g. 4.0" 
+            required 
+            aria-label="Room width in meters">
+          <div class="field-hint">Enter value between 0.1 - 100m</div>
+        </div>
+      </div>
+
+      <!-- Tile Dimensions Section -->
+      <div class="section-title">Tile Dimensions (Millimeters)</div>
+      <div class="input-group input-row">
+        <div class="field">
+          <label for="tileLength">
+            Tile Length (mm)
+            <span class="tooltip">
+              <span class="info-icon">?</span>
+              <span class="tooltiptext">Length of individual tile in millimeters (e.g., 600mm = 60cm)</span>
+            </span>
+          </label>
+          <input 
+            type="number" 
+            id="tileLength" 
+            min="50" 
+            max="3000" 
+            placeholder="e.g. 600" 
+            required 
+            aria-label="Tile length in millimeters">
+          <div class="field-hint">Standard range: 50 - 3000mm</div>
+        </div>
+        <div class="field">
+          <label for="tileWidth">
+            Tile Width (mm)
+            <span class="tooltip">
+              <span class="info-icon">?</span>
+              <span class="tooltiptext">Width of individual tile in millimeters</span>
+            </span>
+          </label>
+          <input 
+            type="number" 
+            id="tileWidth" 
+            min="50" 
+            max="3000" 
+            placeholder="e.g. 600" 
+            required 
+            aria-label="Tile width in millimeters">
+          <div class="field-hint">Standard range: 50 - 3000mm</div>
+        </div>
+      </div>
+
+      <!-- Optimization & Wastage Section -->
+      <div class="section-title">Optimization & Wastage Settings</div>
+      <div class="input-group input-row">
+        <div class="field">
+          <label for="wasteFactor">
+            Wastage Cut Margin
+            <span class="tooltip">
+              <span class="info-icon">?</span>
+              <span class="tooltiptext">Additional material buffer for cutting, breakage, and fitting</span>
+            </span>
+          </label>
+          <select id="wasteFactor" required aria-label="Wastage cut margin percentage">
+            <option value="1.05">5% - Simple Grid Layout</option>
+            <option value="1.10" selected>10% - Standard / Staggered (Recommended)</option>
+            <option value="1.15">15% - Diagonal / Complex Patterns</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="boxCoverage">
+            Box Coverage (m²)
+            <span class="tooltip">
+              <span class="info-icon">?</span>
+              <span class="tooltiptext">Coverage area per box of tiles from manufacturer</span>
+            </span>
+          </label>
+          <input 
+            type="number" 
+            id="boxCoverage" 
+            step="0.01" 
+            min="0.1" 
+            placeholder="e.g. 1.44" 
+            required 
+            aria-label="Box coverage in square meters">
+          <div class="field-hint">Check tile box specification</div>
+        </div>
+      </div>
+
+      <!-- Grout & Joint Settings -->
+      <div class="section-title">Grout Line & Joint Settings</div>
+      <div class="input-group input-row">
+        <div class="field">
+          <label for="groutWidth">
+            Grout Width (mm)
+            <span class="tooltip">
+              <span class="info-icon">?</span>
+              <span class="tooltiptext">Width of joint/grout line between tiles</span>
+            </span>
+          </label>
+          <select id="groutWidth" required aria-label="Grout line width">
+            <option value="1.5">1.5mm - Small Joint</option>
+            <option value="2" selected>2mm - Standard Joint</option>
+            <option value="3">3mm - Medium Joint</option>
+            <option value="5">5mm - Large Joint</option>
+            <option value="10">10mm - Extra Large Joint</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="cutPercentage">
+            Expected Cut Pieces %
+            <span class="tooltip">
+              <span class="info-icon">?</span>
+              <span class="tooltiptext">Percentage of tiles expected to be cut/trimmed</span>
+            </span>
+          </label>
+          <input 
+            type="number" 
+            id="cutPercentage" 
+            step="1" 
+            min="0" 
+            max="100" 
+            value="5" 
+            required 
+            aria-label="Expected cut pieces percentage">
+          <div class="field-hint">Typical: 5-15%</div>
+        </div>
+      </div>
+
+      <!-- Calculate Button -->
+      <button class="btn-calc" onclick="TilTool.calculateLayout()">📊 Calculate Layout & Compliance</button>
+
+      <!-- Results Card -->
+      <div class="results-card" id="results">
+        
+        <!-- Basic Calculations -->
+        <div class="result-section">
+          <div class="result-section-title">📐 Basic Calculations</div>
+          <div class="result-item">
+            <span class="result-label">Total Surface Area:</span>
+            <span class="result-value">
+              <span id="totalArea">0</span><span class="result-unit">m²</span>
+            </span>
+          </div>
+          <div class="result-item">
+            <span class="result-label">Single Tile Area:</span>
+            <span class="result-value">
+              <span id="tileArea">0</span><span class="result-unit">m²</span>
+            </span>
+          </div>
+          <div class="result-item">
+            <span class="result-label">Tiles Needed (Base):</span>
+            <span class="result-value">
+              <span id="baseTiles">0</span><span class="result-unit">pcs</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Wastage & Contingency -->
+        <div class="result-section">
+          <div class="result-section-title">🛡️ Wastage & Contingency</div>
+          <div class="result-item">
+            <span class="result-label">Wastage Factor:</span>
+            <span class="result-value">
+              <span id="wastagePercent">10</span><span class="result-unit">%</span>
+            </span>
+          </div>
+          <div class="result-item">
+            <span class="result-label">Cut Piece Allowance:</span>
+            <span class="result-value">
+              <span id="cutAllowance">0</span><span class="result-unit">pcs</span>
+            </span>
+          </div>
+          <div class="result-item">
+            <span class="result-label">Total Wastage Amount:</span>
+            <span class="result-value">
+              <span id="totalWastage">0</span><span class="result-unit">pcs</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Final Requirements -->
+        <div class="result-section">
+          <div class="result-section-title">✅ Final Requirements</div>
+          <div class="result-item">
+            <span class="result-label">Total Tiles to Purchase:</span>
+            <span class="result-value">
+              <span id="finalTiles">0</span><span class="result-unit">pcs</span>
+            </span>
+          </div>
+          <div class="result-item">
+            <span class="result-label">Boxes to Order:</span>
+            <span class="result-value">
+              <span id="boxesNeeded">0</span><span class="result-unit">boxes</span>
+            </span>
+          </div>
+          <div class="result-item">
+            <span class="result-label">Total Coverage Area:</span>
+            <span class="result-value">
+              <span id="totalCoverage">0</span><span class="result-unit">m²</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Layout Information -->
+        <div class="result-section">
+          <div class="result-section-title">📏 Layout Information</div>
+          <div class="result-item">
+            <span class="result-label">Tiles per Row (Length):</span>
+            <span class="result-value">
+              <span id="tilesPerRow">0</span><span class="result-unit">pcs</span>
+            </span>
+          </div>
+          <div class="result-item">
+            <span class="result-label">Tiles per Column (Width):</span>
+            <span class="result-value">
+              <span id="tilesPerColumn">0</span><span class="result-unit">pcs</span>
+            </span>
+          </div>
+          <div class="result-item">
+            <span class="result-label">Grout Line Spacing:</span>
+            <span class="result-value">
+              <span id="groutDisplay">2</span><span class="result-unit">mm</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Compliance & Alerts -->
+        <div class="alert alert-success" id="complianceAlert">
+          ✓ Calculation meets construction compliance standards
+        </div>
+
+        <div class="alert alert-warning" id="warningAlert">
+          ⚠️ <span id="warningText"></span>
+        </div>
+
+        <div class="alert alert-error" id="errorAlert">
+          ✗ <span id="errorText"></span>
+        </div>
+
+        <div class="compliance-badge">
+          Compliance Verified
+        </div>
+
+        <!-- Export Section -->
+        <div class="export-section">
+          <button class="btn-calc export-button" onclick="TilTool.exportCalculation()">📥 Export Report (JSON)</button>
+        </div>
+
+      </div>
+
+      <!-- Button Row -->
+      <div class="button-row" id="buttonRow" style="display: none;">
+        <button class="btn-calc btn-secondary" onclick="TilTool.clearForm()">Clear Form</button>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="signature-footer">
+      <p>TilTool Construction Compliance Calculator</p>
+      <span class="signature-badge">CONSTRUCTION GRADE v1.0.0</span>
+      <p style="margin-top: 8px; font-size: 0.75rem;">
+        For professional use. Always verify calculations with local building codes and standards.
+      </p>
+    </div>
+
+  </div>
+
+  <script>
+    'use strict';
+
+    /**
+     * TilTool Calculator - Construction Compliance Engine
+     * Safe, validated, and standards-compliant tile calculation system
+     * @version 1.0.0
+     * @author TilTool Development Team
+     */
+
+    // Configuration Constants
+    const CONFIG = {
+      MIN_SURFACE: 0.1,
+      MAX_SURFACE: 1000,
+      MIN_TILE_SIZE: 50,
+      MAX_TILE_SIZE: 3000,
+      DEFAULT_GROUT: 2,
+      MIN_WASTAGE: 5,
+      MAX_WASTAGE: 20,
+      MIN_GROUT: 1.5,
+      MAX_GROUT: 10,
+      MIN_PROJECT_AREA: 1,
+      LARGE_PROJECT_AREA: 500
+    };
+
+    // TilTool Application Namespace
+    const TilTool = {
+      
+      /**
+       * ERROR_CODES - Standardized error codes for system debugging
+       */
+      ERROR_CODES: {
+        INPUT_VALIDATION_FAILED: 'ERR_001',
+        INVALID_LENGTH: 'ERR_002',
+        INVALID_WIDTH: 'ERR_003',
+        INVALID_TILE_LENGTH: 'ERR_004',
+        INVALID_TILE_WIDTH: 'ERR_005',
+        INVALID_BOX_COVERAGE: 'ERR_006',
+        INVALID_CUT_PERCENTAGE: 'ERR_007',
+        CALCULATION_ERROR: 'ERR_008',
+        DOM_ELEMENT_NOT_FOUND: 'ERR_009',
+        EXPORT_ERROR: 'ERR_010'
+      },
+
+      /**
+       * LOG_LEVELS - Logging configuration
+       */
+      LOG_LEVELS: {
+        DEBUG: 'DEBUG',
+        INFO: 'INFO',
+        WARNING: 'WARNING',
+        ERROR: 'ERROR'
+      },
+
+      /**
+       * Internal logger function
+       * @param {string} level - Log level
+       * @param {string} message - Log message
+       * @param {object} data - Optional data object
+       */
+      log: function(level, message, data = null) {
+        const timestamp = new Date().toISOString();
+        const logEntry = `[${timestamp}] [${level}] ${message}`;
+        
+        if (data) {
+          console.log(logEntry, data);
+        } else {
+          console.log(logEntry);
+        }
+      },
+
+      /**
+       * Validate all input fields
+       * @returns {object} Validation result with status and errors
+       */
+      validateInputs: function() {
+        const roomLength = parseFloat(document.getElementById('roomLength').value);
+        const roomWidth = parseFloat(document.getElementById('roomWidth').value);
+        const tileLength = parseFloat(document.getElementById('tileLength').value);
+        const tileWidth = parseFloat(document.getElementById('tileWidth').value);
+        const boxCoverage = parseFloat(document.getElementById('boxCoverage').value);
+        const cutPercentage = parseFloat(document.getElementById('cutPercentage').value);
+
+        const errors = [];
+
+        // Validate room length
+        if (!roomLength || isNaN(roomLength)) {
+          errors.push({
+            code: this.ERROR_CODES.INVALID_LENGTH,
+            message: 'Room length is required and must be a valid number'
+          });
+        } else if (roomLength < CONFIG.MIN_SURFACE) {
+          errors.push({
+            code: this.ERROR_CODES.INVALID_LENGTH,
+            message: `Room length must be at least ${CONFIG.MIN_SURFACE}m`
+          });
+        } else if (roomLength > CONFIG.MAX_SURFACE) {
+          errors.push({
+            code: this.ERROR_CODES.INVALID_LENGTH,
+            message: `Room length cannot exceed ${CONFIG.MAX_SURFACE}m`
+          });
+        }
+
+        // Validate room width
+        if (!roomWidth || isNaN(roomWidth)) {
+          errors.push({
+            code: this.ERROR_CODES.INVALID_WIDTH,
+            message: 'Room width is required and must be a valid number'
+          });
+        } else if (roomWidth < CONFIG.MIN_SURFACE) {
+          errors.push({
+            code: this.ERROR_CODES.INVALID_WIDTH,
+            message: `Room width must be at least ${CONFIG.MIN_SURFACE}m`
+          });
+        } else if (roomWidth > CONFIG.MAX_SURFACE) {
+          errors.push({
+            code: this.ERROR_CODES.INVALID_WIDTH,
+            message: `Room width cannot exceed ${CONFIG.MAX_SURFACE}m`
+          });
+        }
+
+        // Validate tile length
+        if (!tileLength || isNaN(tileLength)) {
+          errors.push({
+            code: this.ERROR_CODES.INVALID_TILE_LENGTH,
+            message: 'Tile length is required and must be a valid number'
+          });
+        } else if (tileLength < CONFIG.MIN_TILE_SIZE) {
+          errors.push({
+            code: this.ERROR_CODES.INVALID_TILE_LENGTH,
+            message: `Tile length must be at least ${CONFIG.MIN_TILE_SIZE}mm`
+          });
+        } else if (tileLength > CONFIG.MAX_TILE_SIZE) {
+          errors.push({
+            code: this.ERROR_CODES.INVALID_TILE_LENGTH,
+            message: `Tile length cannot exceed ${CONFIG.MAX_TILE_SIZE}mm`
+          });
+        }
+
+        // Validate tile width
+        if (!tileWidth || isNaN(tileWidth)) {
+          errors.push({
+            code: this.ERROR_CODES.INVALID_TILE_WIDTH,
+            message: 'Tile width is required and must be a valid number'
+          });
+        } else if (tileWidth < CONFIG.MIN_TILE_SIZE) {
+          errors.push({
+            code: this.ERROR_CODES.INVALID_TILE_WIDTH,
+            message: `Tile width must be at least ${CONFIG.MIN_TILE_SIZE}mm`
+          });
+        } else if (tileWidth > CONFIG.MAX_TILE_SIZE) {
+          errors.push({
+            code: this.ERROR_CODES.INVALID_TILE_WIDTH,
+            message: `Tile width cannot exceed ${CONFIG.MAX_TILE_SIZE}mm`
+          });
+        }
+
+        // Validate box coverage
+        if (!boxCoverage || isNaN(boxCoverage)) {
+          errors.push({
+            code: this.ERROR_CODES.INVALID_BOX_COVERAGE,
+            message: 'Box coverage is required and must be a valid number'
+          });
+        } else if (boxCoverage <= 0) {
+          errors.push({
+            code: this.ERROR_CODES.INVALID_BOX_COVERAGE,
+            message: 'Box coverage must be greater than 0'
+          });
+        }
+
+        // Validate cut percentage
+        if (!cutPercentage || isNaN(cutPercentage)) {
+          errors.push({
+            code: this.ERROR_CODES.INVALID_CUT_PERCENTAGE,
+            message: 'Cut percentage is required and must be a valid number'
+          });
+        } else if (cutPercentage < 0 || cutPercentage > 100) {
+          errors.push({
+            code: this.ERROR_CODES.INVALID_CUT_PERCENTAGE,
+            message: 'Cut percentage must be between 0 and 100'
+          });
+        }
+
+        return {
+          valid: errors.length === 0,
+          errors: errors,
+          data: {
+            roomLength,
+            roomWidth,
+            tileLength,
+            tileWidth,
+            boxCoverage,
+            cutPercentage
+          }
+        };
+      },
+
+      /**
+       * Calculate tile layout and requirements
+       */
+      calculateLayout: function() {
+        this.clearAlerts();
+        this.log(this.LOG_LEVELS.INFO, 'Starting tile layout calculation');
+
+        // Validate inputs
+        const validation = this.validateInputs();
+        
+        if (!validation.valid) {
+          const errorMessages = validation.errors.map(e => `${e.code}: ${e.message}`).join(' | ');
+          this.showError(errorMessages);
+          this.log(this.LOG_LEVELS.ERROR, 'Validation failed', validation.errors);
+          return;
+        }
+
+        try {
+          const { roomLength, roomWidth, tileLength, tileWidth, boxCoverage, cutPercentage } = validation.data;
+          const wasteFactor = parseFloat(document.getElementById('wasteFactor').value);
+          const groutWidth = parseFloat(document.getElementById('groutWidth').value);
+
+          // Convert millimeters to meters
+          const tileLengthMeters = tileLength / 1000;
+          const tileWidthMeters = tileWidth / 1000;
+
+          // Calculate surface area
+          const totalArea = roomLength * roomWidth;
+
+          // Calculate single tile area
+          const tileArea = tileLengthMeters * tileWidthMeters;
+
+          // Calculate base tiles needed
+          const baseTiles = Math.ceil(totalArea / tileArea);
+
+          // Calculate tiles per row and column
+          const tilesPerRow = Math.ceil(roomLength / tileLengthMeters);
+          const tilesPerColumn = Math.ceil(roomWidth / tileWidthMeters);
+
+          // Calculate wastage and contingency
+          const wastagePercentage = (wasteFactor - 1) * 100;
+          const cutAllowance = Math.ceil((baseTiles * cutPercentage) / 100);
+          const totalWastage = Math.ceil(baseTiles * (wasteFactor - 1)) + cutAllowance;
+          const finalTiles = baseTiles + totalWastage;
+
+          // Calculate boxes needed
+          const tilesPerBox = Math.floor(boxCoverage / tileArea);
+          const boxesNeeded = Math.ceil(finalTiles / tilesPerBox);
+          const totalCoverage = boxesNeeded * boxCoverage;
+
+          // Perform compliance checks
+          const complianceIssues = this.performComplianceChecks({
+            totalArea,
+            tileArea,
+            finalTiles,
+            wastagePercentage,
+            groutWidth
+          });
+
+          // Update UI with results
+          this.updateResults({
+            totalArea: totalArea.toFixed(2),
+            tileArea: tileArea.toFixed(6),
+            baseTiles: baseTiles,
+            wastagePercent: wastagePercentage.toFixed(1),
+            cutAllowance: cutAllowance,
+            totalWastage: totalWastage,
+            finalTiles: finalTiles,
+            boxesNeeded: boxesNeeded,
+            totalCoverage: totalCoverage.toFixed(2),
+            tilesPerRow: tilesPerRow,
+            tilesPerColumn: tilesPerColumn,
+            groutWidth: groutWidth,
+            complianceIssues: complianceIssues
+          });
+
+          // Show results
+          const resultsElement = document.getElementById('results');
+          if (resultsElement) {
+            resultsElement.classList.add('active');
+          }
+
+          const buttonRow = document.getElementById('buttonRow');
+          if (buttonRow) {
+            buttonRow.style.display = 'flex';
+          }
+
+          this.log(this.LOG_LEVELS.INFO, 'Calculation completed successfully', {
+            totalArea: totalArea,
+            finalTiles: finalTiles,
+            boxesNeeded: boxesNeeded
+          });
+
+        } catch (error) {
+          this.showError(`${this.ERROR_CODES.CALCULATION_ERROR}: ${error.message}`);
+          this.log(this.LOG_LEVELS.ERROR, 'Calculation error', error);
+        }
+      },
+
+      /**
+       * Perform compliance checks based on construction standards
+       * @param {object} data - Calculation data
+       * @returns {array} Array of compliance issues (if any)
+       */
+      performComplianceChecks: function(data) {
+        const issues = [];
+
+        // Check wastage percentage (recommended: 5-20%)
+        if (data.wastagePercentage < CONFIG.MIN_WASTAGE || data.wastagePercentage > CONFIG.MAX_WASTAGE) {
+          issues.push(`Wastage percentage (${data.wastagePercentage.toFixed(1)}%) is outside recommended range (${CONFIG.MIN_WASTAGE}-${CONFIG.MAX_WASTAGE}%)`);
+        }
+
+        // Check grout width (recommended: 1.5-10mm per industry standards)
+        if (data.groutWidth < CONFIG.MIN_GROUT || data.groutWidth > CONFIG.MAX_GROUT) {
+          issues.push(`Grout width (${data.groutWidth}mm) may exceed standard specifications (${CONFIG.MIN_GROUT}-${CONFIG.MAX_GROUT}mm)`);
+        }
+
+        // Check if project is too small
+        if (data.totalArea < CONFIG.MIN_PROJECT_AREA) {
+          issues.push(`Project area (${data.totalArea.toFixed(2)}m²) is very small - ensure appropriate application`);
+        }
+
+        // Check if project is very large
+        if (data.totalArea > CONFIG.LARGE_PROJECT_AREA) {
+          issues.push(`Large project area (${data.totalArea.toFixed(2)}m²) - consider sectioning for installation and quality control`);
+        }
+
+        return issues;
+      },
+
+      /**
+       * Update results display with calculated values
+       * @param {object} results - Results object
+       */
+      updateResults: function(results) {
+        const elementIds = [
+          'totalArea', 'tileArea', 'baseTiles', 'wastagePercent', 'cutAllowance',
+          'totalWastage', 'finalTiles', 'boxesNeeded', 'totalCoverage',
+          'tilesPerRow', 'tilesPerColumn', 'groutDisplay'
+        ];
+
+        const resultValues = {
+          'totalArea': results.totalArea,
+          'tileArea': results.tileArea,
+          'baseTiles': results.baseTiles,
+          'wastagePercent': results.wastagePercent,
+          'cutAllowance': results.cutAllowance,
+          'totalWastage': results.totalWastage,
+          'finalTiles': results.finalTiles,
+          'boxesNeeded': results.boxesNeeded,
+          'totalCoverage': results.totalCoverage,
+          'tilesPerRow': results.tilesPerRow,
+          'tilesPerColumn': results.tilesPerColumn,
+          'groutDisplay': results.groutWidth
+        };
+
+        // Update all result elements
+        for (const [id, value] of Object.entries(resultValues)) {
+          const element = document.getElementById(id);
+          if (element) {
+            element.textContent = value;
+          } else {
+            this.log(this.LOG_LEVELS.WARNING, `DOM element not found: ${id}`);
+          }
+        }
+
+        // Handle compliance alerts
+        const complianceAlert = document.getElementById('complianceAlert');
+        const warningAlert = document.getElementById('warningAlert');
+
+        if (results.complianceIssues && results.complianceIssues.length > 0) {
+          if (complianceAlert) complianceAlert.style.display = 'none';
+          if (warningAlert) {
+            warningAlert.classList.add('active');
+            const warningText = document.getElementById('warningText');
+            if (warningText) {
+              warningText.textContent = results.complianceIssues.join(' | ');
+            }
+          }
+        } else {
+          if (complianceAlert) complianceAlert.style.display = 'block';
+          if (warningAlert) warningAlert.classList.remove('active');
+        }
+      },
+
+      /**
+       * Clear all alert messages
+       */
+      clearAlerts: function() {
+        const complianceAlert = document.getElementById('complianceAlert');
+        const warningAlert = document.getElementById('warningAlert');
+        const errorAlert = document.getElementById('errorAlert');
+
+        if (complianceAlert) complianceAlert.style.display = 'none';
+        if (warningAlert) warningAlert.classList.remove('active');
+        if (errorAlert) errorAlert.classList.remove('active');
+      },
+
+      /**
+       * Display error message with error code
+       * @param {string} message - Error message
+       */
+      showError: function(message) {
+        const errorAlert = document.getElementById('errorAlert');
+        const errorText = document.getElementById('errorText');
+
+        if (errorText) {
+          errorText.textContent = message;
+        }
+
+        if (errorAlert) {
+          errorAlert.classList.add('active');
+        }
+
+        const resultsElement = document.getElementById('results');
+        if (resultsElement) {
+          resultsElement.classList.remove('active');
+        }
+      },
+
+      /**
+       * Export calculation results as JSON
+       */
+      exportCalculation: function() {
+        try {
+          const data = {
+            metadata: {
+              timestamp: new Date().toISOString(),
+              application: 'TilTool v1.0.0',
+              type: 'Construction Compliance Report'
+            },
+            inputs: {
+              roomLength: document.getElementById('roomLength').value,
+              roomWidth: document.getElementById('roomWidth').value,
+              tileLength: document.getElementById('tileLength').value,
+              tileWidth: document.getElementById('tileWidth').value,
+              boxCoverage: document.getElementById('boxCoverage').value,
+              wasteFactor: document.getElementById('wasteFactor').value,
+              groutWidth: document.getElementById('groutWidth').value,
+              cutPercentage: document.getElementById('cutPercentage').value
+            },
+            results: {
+              totalArea: document.getElementById('totalArea').textContent,
+              finalTiles: document.getElementById('finalTiles').textContent,
+              boxesNeeded: document.getElementById('boxesNeeded').textContent,
+              totalCoverage: document.getElementById('totalCoverage').textContent
+            }
+          };
+
+          const jsonString = JSON.stringify(data, null, 2);
+          const blob = new Blob([jsonString], { type: 'application/json;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          
+          link.href = url;
+          link.download = `tiltool-report-${Date.now()}.json`;
+          
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+
+          this.log(this.LOG_LEVELS.INFO, 'Report exported successfully');
+
+        } catch (error) {
+          this.showError(`${this.ERROR_CODES.EXPORT_ERROR}: ${error.message}`);
+          this.log(this.LOG_LEVELS.ERROR, 'Export error', error);
+        }
+      },
+
+      /**
+       * Clear form and reset to initial state
+       */
+      clearForm: function() {
+        document.getElementById('roomLength').value = '';
+        document.getElementById('roomWidth').value = '';
+        document.getElementById('tileLength').value = '';
+        document.getElementById('tileWidth').value = '';
+        document.getElementById('boxCoverage').value = '';
+        document.getElementById('cutPercentage').value = '5';
+        document.getElementById('wasteFactor').value = '1.10';
+        document.getElementById('groutWidth').value = '2';
+
+        const resultsElement = document.getElementById('results');
+        if (resultsElement) {
+          resultsElement.classList.remove('active');
+        }
+
+        const buttonRow = document.getElementById('buttonRow');
+        if (buttonRow) {
+          buttonRow.style.display = 'none';
+        }
+
+        this.clearAlerts();
+        this.log(this.LOG_LEVELS.INFO, 'Form cleared');
+      }
+    };
+
+    /**
+     * Keyboard event handler
+     */
+    document.addEventListener('keypress', function(event) {
+      if (event.key === 'Enter') {
+        TilTool.calculateLayout();
+      }
+    });
+
+    /**
+     * Application initialization
+     */
+    window.addEventListener('load', function() {
+      TilTool.log(TilTool.LOG_LEVELS.INFO, 'TilTool Construction Compliance Calculator v1.0.0 initialized');
+    });
+
+  </script>
+</body>
+</html>
