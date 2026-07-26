@@ -1,0 +1,46 @@
+{
+  "name": "tiltool-app",
+  "version": "1.0.0",
+  "description": "Professional Construction Compliance Tile Calculator Engine",
+  "main": "index.html",
+  "homepage": "https://github.com/nkosiya95/Tiltool-App-",
+  "author": "nkosiya95",
+  "license": "MIT",
+  "keywords": [
+    "construction",
+    "tiles",
+    "calculator",
+    "compliance",
+    "building",
+    "estimation",
+    "flooring"
+  ],
+  "scripts": {
+    "test": "jest --coverage",
+    "test:watch": "jest --watch",
+    "test:debug": "node --inspect-brk node_modules/.bin/jest --runInBand",
+    "start": "http-server -p 8080",
+    "build": "echo 'Build successful'",
+    "lint": "eslint *.js",
+    "format": "prettier --write *.js *.html *.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nkosiya95/Tiltool-App-.git"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "http-server": "^14.1.1",
+    "eslint": "^8.0.0",
+    "prettier": "^2.8.0"
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "categories": [
+    "utilities",
+    "construction",
+    "calculator"
+  ]
+}
