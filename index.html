@@ -982,7 +982,8 @@
           const finalTiles = baseTiles + totalWastage;
 
           // Calculate boxes needed
-          const tilesPerBox = Math.floor(boxCoverage / tileArea);
+          const safeTileArea = tileArea > 0 ? tileArea : 1;
+          const tilesPerBox = Math.max(1, Math.floor(boxCoverage / safeTileArea));
           const boxesNeeded = Math.ceil(finalTiles / tilesPerBox);
           const totalCoverage = boxesNeeded * boxCoverage;
 
@@ -1237,8 +1238,12 @@
     /**
      * Keyboard event handler
      */
-    document.addEventListener('keypress', function(event) {
-      if (event.key === 'Enter') {
+    document.addEventListener('keydown', function(event) {
+      const target = event.target;
+      const isTextInput = target && (target.tagName === 'INPUT' || target.tagName === 'SELECT' || target.tagName === 'TEXTAREA');
+
+      if (event.key === 'Enter' && isTextInput) {
+        event.preventDefault();
         TilTool.calculateLayout();
       }
     });
